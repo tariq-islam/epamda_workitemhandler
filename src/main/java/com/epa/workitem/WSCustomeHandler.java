@@ -23,6 +23,7 @@ public class WSCustomeHandler implements WorkItemHandler {
 		WSClient wsClient = new WSClient();
 		
 		String response = wsClient.callService(flowOperation,fileName,path);
+		// set the above 'response' string to the 'responseStr' process variable
 		
 		workItemManager.completeWorkItem(workItem.getId(), null);
 
