@@ -1,5 +1,8 @@
 package com.epa.workitem;
 
+import org.kie.api.KieServices;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -22,9 +25,15 @@ public class WSCustomeHandler implements WorkItemHandler {
 		String path = (String) workItem.getParameter("path");
 		WSClient wsClient = new WSClient();
 		
-		String response = wsClient.callService(flowOperation,fileName,path);
+		String responseStr = wsClient.callService(flowOperation,fileName,path);
 		// set the above 'response' string to the 'responseStr' process variable
-		
+		/**
+		StatefulKnowledgeSession ksession = ((KnowledgeCommandContext) context).getStatefulKnowledgesession();  
+        ProcessInstance processInstance = (ProcessInstance) ksession.getProcessInstance(piId);  
+        VariableScopeInstance variableScope = (VariableScopeInstance) processInstance.getContextInstance(VariableScope.VARIABLE_SCOPE);  
+Map<String, Object> variables = variableScope.getVariables();
+		*/
+        
 		workItemManager.completeWorkItem(workItem.getId(), null);
 
 	}
