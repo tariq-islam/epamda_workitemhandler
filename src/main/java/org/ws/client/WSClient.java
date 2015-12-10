@@ -91,10 +91,11 @@ public class WSClient {
 		} catch (NodeFaultMessage e) {
 			e.printStackTrace();
 		}
-
-	    return (status == null || statusDetail == null) ? 
+	    String toReturn = (status == null || statusDetail == null) ? 
 	    		"No status was returned, please contact an administrator." : 
-	    			status + " " + statusDetail; 
+	    			status.value + " " + statusDetail.value; 
+	    System.out.println(toReturn);
+	    return toReturn;
 
 	}
 
