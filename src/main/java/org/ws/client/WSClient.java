@@ -23,6 +23,8 @@ import net.exchangenetwork.schema.node._2.TransactionStatusCode;
 import net.exchangenetwork.wsdl.node._2.NetworkNodePortType2;
 import net.exchangenetwork.wsdl.node._2.NodeFaultMessage;
 
+import org.apache.xerces.dom.ElementNSImpl;
+
 public class WSClient {
 
 	private Holder<TransactionStatusCode> status = new Holder<TransactionStatusCode>();
@@ -101,6 +103,10 @@ public class WSClient {
 
 	}
 
+	/**
+	 * This method calls the Node query method to retrieve an E-Activity already submitted by a user.
+	 * @return
+	 */
 	public String callQuery() {
 		String toReturn = "no return value";
 		QName qname = new QName("http://www.exchangenetwork.net/wsdl/node/2",
@@ -132,10 +138,19 @@ public class WSClient {
 			Holder<GenericXmlType> results = new Holder<GenericXmlType>();
 
 			String dataflow = "E-ACTIVITY";
+			
 			networkNodePortType2.query(securityToken, dataflow, "GetByUser",
 					rowId, maxRows, parameters, rowCount, lastSet, results);
+			
 			List<Object> resultSet = results.value.getContent();
 			// what to do here with response?
+			List<ElementNSImpl> elementSet = new ArrayList<ElementNSImpl>();
+			for (int i = 0; i < resultSet.size(); i++) {
+				ElementNSImpl toAdd = (ElementNSImpl) resultSet.get(i);
+				elementSet.add(toAdd);
+			}
+			
+			toReturn = "Returned: " + elementSet.get(0).toString();
 		} catch (NodeFaultMessage e) {
 			e.printStackTrace();
 		}

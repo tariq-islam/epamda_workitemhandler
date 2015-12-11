@@ -26,30 +26,9 @@ public class WebServiceClient  {
 
 	public static void main(String[] args)  {
 		   
-		NetworkNode2 network2 = new NetworkNode2();
-		NetworkNodePortType2 networkNodePortType2 = network2.getNetworkNodePort2();
-		
-		
-		String securityToken = null;
-		try {
-			securityToken = networkNodePortType2.authenticate("otaqmdademo.redhat@epa.gov", "otaq_rh_6543", "default", "password");
-			
-			Holder<String> transactionId = null;
-			
-			String dataflow = "";
-			String flowOperation="";
-			List<String> recipient= null;
-			List<NotificationURIType> notificationURI = null;
-			List<NodeDocumentType> documents = null;
-			Holder<TransactionStatusCode> status = null;
-			Holder<String> statusDetail = null;
-			networkNodePortType2.submit(securityToken, transactionId, dataflow, flowOperation, recipient, notificationURI, documents, status, statusDetail);
-			
-		} catch (NodeFaultMessage e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("response -> " + securityToken );
+		WSClient wsClient = new WSClient();
+		//wsClient.callService("","newEActivity.xml","/home/tislam/r/poc/epa/newEActivity.xml");
+		wsClient.callQuery();
 		
     }
 	

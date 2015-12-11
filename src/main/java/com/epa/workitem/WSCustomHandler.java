@@ -6,7 +6,7 @@ import org.kie.api.runtime.process.WorkItemManager;
 import org.ws.client.WSClient;
 
 
-public class WSCustomeHandler implements WorkItemHandler {
+public class WSCustomHandler implements WorkItemHandler {
 
 	@Override
 	public void abortWorkItem(WorkItem workItem, WorkItemManager workItemManager) {
