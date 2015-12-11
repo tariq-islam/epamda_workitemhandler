@@ -1,5 +1,9 @@
 package com.epa.workitem;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.kie.api.runtime.process.WorkItem;
@@ -24,8 +28,15 @@ public class WSCustomHandler implements WorkItemHandler {
 		String path = (String) workItem.getParameter("path");
 		WSClient wsClient = new WSClient();
 		
-		String responseStr = (flowOperation.equals("GetByUser")) ? wsClient.callQuery() : wsClient.callService(flowOperation,fileName,path);
+		Calendar date = Calendar.getInstance();
+	    date.setTime(new Date());
+	    Format f = new SimpleDateFormat("dd-MMMM-yyyy");
+	    System.out.println(f.format(date.getTime()));
+	    date.add(Calendar.YEAR,1);
+	    System.out.println(f.format(date.getTime()));
 		
+		String responseStr = (flowOperation.equals("GetByUser")) ? wsClient.callQuery() : wsClient.callService(flowOperation,fileName,path);
+		responseStr += "\nYour next report is due on: " + f.format(date.getTime());
 		// set the above 'response' string to the 'responseStr' process variable
 		HashMap map = new HashMap();
 		map.put("responseStr", responseStr);
