@@ -35,7 +35,6 @@ public class WSClient {
 			url = new URL(
 					"http://devngn.epacdxnode.net/ngn-enws20/services/NetworkNode2Service?wsdl");
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

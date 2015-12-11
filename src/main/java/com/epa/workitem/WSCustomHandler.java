@@ -1,5 +1,7 @@
 package com.epa.workitem;
 
+import java.util.HashMap;
+
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.api.runtime.process.WorkItemManager;
@@ -23,15 +25,12 @@ public class WSCustomHandler implements WorkItemHandler {
 		WSClient wsClient = new WSClient();
 		
 		String responseStr = (flowOperation.equals("GetByUser")) ? wsClient.callQuery() : wsClient.callService(flowOperation,fileName,path);
+		
 		// set the above 'response' string to the 'responseStr' process variable
-		/**
-		StatefulKnowledgeSession ksession = ((KnowledgeCommandContext) context).getStatefulKnowledgesession();  
-        ProcessInstance processInstance = (ProcessInstance) ksession.getProcessInstance(piId);  
-        VariableScopeInstance variableScope = (VariableScopeInstance) processInstance.getContextInstance(VariableScope.VARIABLE_SCOPE);  
-Map<String, Object> variables = variableScope.getVariables();
-		*/
-        
-		workItemManager.completeWorkItem(workItem.getId(), null);
+		HashMap map = new HashMap();
+		map.put("responseStr", responseStr);
+		
+		workItemManager.completeWorkItem(workItem.getId(), map);
 
 	}
 

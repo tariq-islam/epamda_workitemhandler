@@ -27,7 +27,7 @@ public class WebServiceClient  {
 	public static void main(String[] args)  {
 		   
 		WSClient wsClient = new WSClient();
-		//wsClient.callService("","newEActivity.xml","/home/tislam/r/poc/epa/newEActivity.xml");
+		wsClient.callService("","newEActivity.xml","/home/tislam/r/poc/epa/newEActivity.xml");
 		wsClient.callQuery();
 		
     }
