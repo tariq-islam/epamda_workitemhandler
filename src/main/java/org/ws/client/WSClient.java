@@ -148,12 +148,11 @@ public class WSClient {
 				ElementNSImpl toAdd = (ElementNSImpl) resultSet.get(i);
 				elementSet.add(toAdd);
 			}
-			
+			System.out.println("Result set size is: " + elementSet.size());
 			toReturn = "Returned: " + elementSet.get(0).toString();
 		} catch (NodeFaultMessage e) {
 			e.printStackTrace();
 		}
-
 		System.out.println(toReturn);
 		return toReturn;
 	}
