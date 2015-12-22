@@ -1,16 +1,21 @@
 package org.ws.client;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Holder;
 import javax.xml.ws.Service;
+import javax.xml.ws.soap.MTOMFeature;
 
 import net.exchangenetwork.schema.node._2.AttachmentType;
 import net.exchangenetwork.schema.node._2.DocumentFormatType;
@@ -25,6 +30,7 @@ import net.exchangenetwork.wsdl.node._2.NodeFaultMessage;
 
 import org.apache.xerces.dom.ElementNSImpl;
 
+
 public class WSClient {
 
 	private Holder<TransactionStatusCode> status = new Holder<TransactionStatusCode>();
@@ -35,6 +41,7 @@ public class WSClient {
 			url = new URL(
 					"http://devngn.epacdxnode.net/ngn-enws20/services/NetworkNode2Service?wsdl");
 		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -44,11 +51,14 @@ public class WSClient {
 		QName qname = new QName("http://www.exchangenetwork.net/wsdl/node/2",
 				"NetworkNode2");
 		Service service = Service.create(url, qname);
+		
+		// Enable MTOM
+		MTOMFeature mtomFeature = new MTOMFeature(true);
+		NetworkNodePortType2 networkNodePortType2 = service.getPort(NetworkNodePortType2.class, mtomFeature);
+		
 		String securityToken = null;
 		try {
 
-			NetworkNodePortType2 networkNodePortType2 = service
-					.getPort(NetworkNodePortType2.class);
 			System.out.println("Authenticating");
 			securityToken = networkNodePortType2.authenticate(
 					"otaqmdademo.redhat@epa.gov", "otaq_rh_6543", "default",
@@ -77,12 +87,23 @@ public class WSClient {
 			attType.setContentType("text/xml");
 
 			URL pathURL = null;
+			path = "file://" + path;
 			try {
-				pathURL = Paths.get(path).toUri().toURL();
+				pathURL = new URL(path);
+				System.out.println(path);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
-			DataHandler DHValue = new DataHandler(pathURL);
+			DataSource source = null;
+			try {
+				source = new FileDataSource(new File(new URI(pathURL.toString())));
+				System.out.println(source.getContentType());
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			DataHandler DHValue = new DataHandler(source);
 			attType.setValue(DHValue);
 			nodeDocumentType.setDocumentContent(attType);
 
@@ -112,10 +133,12 @@ public class WSClient {
 				"NetworkNode2");
 		Service service = Service.create(url, qname);
 		String securityToken = null;
+		
+		MTOMFeature mtomFeature = new MTOMFeature(true);
+		NetworkNodePortType2 networkNodePortType2 = service.getPort(NetworkNodePortType2.class, mtomFeature);
+		
 		try {
 
-			NetworkNodePortType2 networkNodePortType2 = service
-					.getPort(NetworkNodePortType2.class);
 			System.out.println("Authenticating");
 			securityToken = networkNodePortType2.authenticate(
 					"otaqmdademo.redhat@epa.gov", "otaq_rh_6543", "default",
@@ -142,19 +165,51 @@ public class WSClient {
 					rowId, maxRows, parameters, rowCount, lastSet, results);
 			
 			List<Object> resultSet = results.value.getContent();
-			// what to do here with response?
+
 			List<ElementNSImpl> elementSet = new ArrayList<ElementNSImpl>();
 			for (int i = 0; i < resultSet.size(); i++) {
 				ElementNSImpl toAdd = (ElementNSImpl) resultSet.get(i);
 				elementSet.add(toAdd);
 			}
-			System.out.println("Result set size is: " + elementSet.size());
+			
 			toReturn = "Returned: " + elementSet.get(0).toString();
 		} catch (NodeFaultMessage e) {
 			e.printStackTrace();
 		}
+
 		System.out.println(toReturn);
 		return toReturn;
+	}
+	
+	public void getStatus(String tId) {
+		Holder<String> transactionId = new Holder<String>(tId);
+		QName qname = new QName("http://www.exchangenetwork.net/wsdl/node/2",
+				"NetworkNode2");
+		Service service = Service.create(url, qname);
+		String securityToken = null;
+		
+		MTOMFeature mtomFeature = new MTOMFeature(true);
+		NetworkNodePortType2 networkNodePortType2 = service.getPort(NetworkNodePortType2.class, mtomFeature);
+		
+		try {
+
+			System.out.println("Authenticating");
+			securityToken = networkNodePortType2.authenticate(
+					"otaqmdademo.redhat@epa.gov", "otaq_rh_6543", "default",
+					"password");
+			System.out.println("Security token: " + securityToken);
+
+			networkNodePortType2.getStatus(securityToken, transactionId, status, statusDetail);
+			
+			System.out.println("Status: " + status.value);
+			System.out.println("Status Detail: " + statusDetail.value);
+			
+			
+			
+		} catch (NodeFaultMessage e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }
