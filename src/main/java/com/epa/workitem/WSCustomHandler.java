@@ -26,6 +26,7 @@ public class WSCustomHandler implements WorkItemHandler {
 		String flowOperation = (String) workItem.getParameter("flowOperation");
 		String fileName = (String) workItem.getParameter("fileName");
 		String path = (String) workItem.getParameter("path");
+		String tId = (String) workItem.getParameter("transactionIdIn");
 		WSClient wsClient = new WSClient();
 		
 		Calendar date = Calendar.getInstance();
@@ -35,11 +36,22 @@ public class WSCustomHandler implements WorkItemHandler {
 	    date.add(Calendar.YEAR,1);
 	    System.out.println(f.format(date.getTime()));
 		
-		String responseStr = (flowOperation.equals("GetByUser")) ? wsClient.callQuery() : wsClient.callService(flowOperation,fileName,path);
-		responseStr += "\nYour next report is due on: " + f.format(date.getTime());
+		String responseStr = "";
+		if (flowOperation.equals("GetByUser")) {
+			responseStr = wsClient.callQuery();
+		}
+		else if (flowOperation.equals("getStatus")) {
+			responseStr = wsClient.getStatus(tId);
+		}
+		else {
+			tId = wsClient.callService(flowOperation, fileName, path);
+			responseStr += "\nYour next report is due on: " + f.format(date.getTime());
+		}
+		
 		// set the above 'response' string to the 'responseStr' process variable
 		HashMap map = new HashMap();
 		map.put("responseStr", responseStr);
+		map.put("transactionIdOut", tId);
 		
 		workItemManager.completeWorkItem(workItem.getId(), map);
 

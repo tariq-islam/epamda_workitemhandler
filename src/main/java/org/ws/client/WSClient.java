@@ -47,7 +47,6 @@ public class WSClient {
 	}
 
 	public String callService(String flowOperation, String docname, String path) {
-		String toReturn = "no return value";
 		QName qname = new QName("http://www.exchangenetwork.net/wsdl/node/2",
 				"NetworkNode2");
 		Service service = Service.create(url, qname);
@@ -57,6 +56,7 @@ public class WSClient {
 		NetworkNodePortType2 networkNodePortType2 = service.getPort(NetworkNodePortType2.class, mtomFeature);
 		
 		String securityToken = null;
+		Holder<String> transactionId = new Holder<String>("");
 		try {
 
 			System.out.println("Authenticating");
@@ -64,7 +64,6 @@ public class WSClient {
 					"otaqmdademo.redhat@epa.gov", "otaq_rh_6543", "default",
 					"password");
 			System.out.println("Security token: " + securityToken);
-			Holder<String> transactionId = new Holder<String>("");
 
 			String dataflow = "E-ACTIVITY";
 			// String flowOperation="updateStatus";
@@ -116,10 +115,8 @@ public class WSClient {
 		} catch (NodeFaultMessage e) {
 			e.printStackTrace();
 		}
-		toReturn = (status == null || statusDetail == null) ? "No status was returned, please contact an administrator."
-				: status.value + " " + statusDetail.value;
-		System.out.println(toReturn);
-		return toReturn;
+		System.out.println(transactionId.value);
+		return transactionId.value;
 
 	}
 
@@ -181,7 +178,7 @@ public class WSClient {
 		return toReturn;
 	}
 	
-	public void getStatus(String tId) {
+	public String getStatus(String tId) {
 		Holder<String> transactionId = new Holder<String>(tId);
 		QName qname = new QName("http://www.exchangenetwork.net/wsdl/node/2",
 				"NetworkNode2");
@@ -209,7 +206,7 @@ public class WSClient {
 		} catch (NodeFaultMessage e) {
 			e.printStackTrace();
 		}
-
+		return "Status: " + status.value + "\nStatus Detail: " + statusDetail.value;
 	}
 
 }
